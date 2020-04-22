@@ -1,2 +1,2 @@
-# Curso-Practico-ReactJS
-Repositorio para el proyecto desarrollado en el curso de platzi
+# Platzi Video
+Repositorio para el proyecto desarrollado en el curso de Platzi
