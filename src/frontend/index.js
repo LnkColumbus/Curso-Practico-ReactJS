@@ -21,5 +21,5 @@ ReactDOM.hydrate(
       <App />
     </Router>
   </Provider>,
-  document.getElementById("app")
+  document.getElementById("app"),
 );
