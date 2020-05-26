@@ -27,7 +27,7 @@ const Register = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <Header isRegister />
       <section className="register">
         <section className="register__container">
@@ -61,7 +61,7 @@ const Register = (props) => {
           <Link to="/login">Iniciar sesión</Link>
         </section>
       </section>
-    </React.Fragment>
+    </>
   );
 };
 

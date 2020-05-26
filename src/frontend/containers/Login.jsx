@@ -29,7 +29,7 @@ const Login = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <Header isLogin />
       <section className="login">
         <section className="login__container">
@@ -74,7 +74,7 @@ const Login = (props) => {
           </p>
         </section>
       </section>
-    </React.Fragment>
+    </>
   );
 };
 

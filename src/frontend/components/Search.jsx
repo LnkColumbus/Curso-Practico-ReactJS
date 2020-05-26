@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { getVideoSearched } from '../actions';
 import '../assets/styles/components/Search.scss';
 
-const Search = ({ isHome, getVideoSearched }) => {
+const Search = ({ isHome }) => {
   const inputStyle = classNames('input', {
     isHome,
   });
@@ -28,7 +28,6 @@ const Search = ({ isHome, getVideoSearched }) => {
 
 Search.propTypes = {
   isHome: PropTypes.bool,
-  getVideoSearched: PropTypes.func,
 };
 
 const mapDispatchToProps = {

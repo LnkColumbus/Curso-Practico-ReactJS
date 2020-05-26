@@ -28,21 +28,30 @@ const Header = (props) => {
       </Link>
       <div className="header__menu">
         <div className="header__menu--profile">
-          {hasUser ?
-            <img src={gravatar(user.email)} alt={user.email} /> :
+          {hasUser ? (
+            <img src={gravatar(user.email)} alt={user.email} />
+          ) : (
             <img src={userIcon} alt="User" />
-          }
+          )}
           <p>Perfil</p>
         </div>
         <ul>
-          {hasUser ?
-            <li><Link to="/">{user.name}</Link></li> :
-            null
-          }
-          {hasUser ?
-            <li><Link to="/login" onClick={handleLogout}>Cerrar Sesión</Link></li> :
-            <li><Link to="/login">Iniciar Sesión</Link></li>
-          }
+          {hasUser ? (
+            <li>
+              <Link to="/">{user.name}</Link>
+            </li>
+          ) : null}
+          {hasUser ? (
+            <li>
+              <Link to="/login" onClick={handleLogout}>
+                Cerrar Sesión
+              </Link>
+            </li>
+          ) : (
+            <li>
+              <Link to="/login">Iniciar Sesión</Link>
+            </li>
+          )}
         </ul>
       </div>
     </header>
@@ -67,4 +76,3 @@ const mapDispatchToProps = {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
-

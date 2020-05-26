@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { getVideoSource } from '../actions';
 import '../assets/styles/components/Player.scss';
 
-const Player = ({ match, playing, getVideoSource, history }) => {
+const Player = ({ match, playing, history }) => {
   const { id } = match.params;
   const hasPlaying = Object.keys(playing).length > 0;
 
@@ -32,14 +32,17 @@ const Player = ({ match, playing, getVideoSource, history }) => {
         <source src={playing.source} type="video/mp4" />
       </video>
       <div className="Player-back">
-        <button type="button" onClick={handleBack}>Regresar</button>
+        <button type="button" onClick={handleBack}>
+          Regresar
+        </button>
       </div>
     </div>
-  ) : <Redirect to="/404/" />;
+  ) : (
+    <Redirect to="/404/" />
+  );
 };
 
 Player.propTypes = {
-  getVideoSource: PropTypes.func,
   playing: PropTypes.object,
   match: PropTypes.object,
   history: PropTypes.object,
