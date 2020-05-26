@@ -13,7 +13,7 @@ import initialState from '../frontend/initialState';
 import getManifest from './getManifest';
 import config from './config';
 
-const { env, port } = config;
+const { env, port, apiUrl } = config;
 const app = express();
 
 if (env === 'development') {
@@ -127,13 +127,21 @@ app.post('/auth/sign-up', async function (req, res, next) {
   const { body: user } = req;
 
   try {
-    await axios({
-      url: `${config.apiUrl}/api/auth/sign-up`,
+    const userData = await axios({
+      url: `${apiUrl}/api/auth/sign-up`,
       method: 'post',
-      data: user,
+      data: {
+        email: user.email,
+        name: user.name,
+        password: user.password,
+      },
     });
 
-    res.status(201).json({ message: 'User created' });
+    res.status(201).json({
+      name: req.body.name,
+      email: req.body.email,
+      id: userData.data.id,
+    });
   } catch (error) {
     next(error);
   }

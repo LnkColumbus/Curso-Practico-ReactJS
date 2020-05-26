@@ -8,18 +8,10 @@ const reducer = (state, action) => {
     case 'DELETE_FAVORITE':
       return {
         ...state,
-        myList: state.myList.filter(items => items.id !== action.payload),
+        myList: state.myList.filter((items) => items.id !== action.payload),
       };
     case 'LOGIN_REQUEST':
-      return {
-        ...state,
-        user: action.payload,
-      };
     case 'LOGOUT_REQUEST':
-      return {
-        ...state,
-        user: action.payload,
-      };
     case 'REGISTER_REQUEST':
       return {
         ...state,
@@ -28,13 +20,24 @@ const reducer = (state, action) => {
     case 'GET_VIDEO_SOURCE':
       return {
         ...state,
-        playing: state.trends.find(item => item.id === Number(action.payload)) || state.originals.find(item => item.id === Number(action.payload)) || [],
+        playing:
+          state.trends.find((item) => item.id === Number(action.payload)) ||
+          state.originals.find((item) => item.id === Number(action.payload)) ||
+          [],
       };
     case 'GET_VIDEO_SEARCHED':
-      if (action.payload === '' || !action.payload) return { ...state, search: [] };
+      if (action.payload === '' || !action.payload)
+        return { ...state, search: [] };
       return {
         ...state,
-        search: state.trends.filter(item => item.title.toLowerCase().includes(action.payload.toLowerCase())) || state.originals.find(item => item.title.toLowerCase().includes(action.payload.toLowerCase())) || [],
+        search:
+          state.trends.filter((item) =>
+            item.title.toLowerCase().includes(action.payload.toLowerCase()),
+          ) ||
+          state.originals.find((item) =>
+            item.title.toLowerCase().includes(action.payload.toLowerCase()),
+          ) ||
+          [],
       };
     default:
       return state;
