@@ -13,8 +13,25 @@ import initialState from '../frontend/initialState';
 import getManifest from './getManifest';
 import config from './config';
 
+import cookieParser from 'cookie-parser';
+import hapi from '@hapi/boom';
+import passport from 'passport';
+import axios from 'axios';
+
 const { env, port, apiUrl } = config;
 const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Strategies
+require('./utils/auth/strategies/basic');
+
+// Variables de tiempo en sec
+const THIRTY_DAYS_IN_SEC = 2592000;
+const TWO_HOURS_IN_SEC = 7200;
 
 if (env === 'development') {
   console.log('Development config');
