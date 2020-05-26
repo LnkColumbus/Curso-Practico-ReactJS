@@ -6,19 +6,19 @@ import PropTypes from 'prop-types';
 import { getVideoSource } from '../actions';
 import '../assets/styles/components/Player.scss';
 
-const Player = ({ match, playing, history }) => {
-  const { id } = match.params;
-  const hasPlaying = Object.keys(playing).length > 0;
+const Player = (props) => {
+  const { id } = props.match.params;
+  const hasPlaying = Object.keys(props.playing).length > 0;
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getVideoSource(id);
+    props.getVideoSource(id);
     setLoading(false);
   }, []);
 
   const handleBack = () => {
-    history.goBack();
+    props.history.goBack();
     setLoading(true);
   };
 
@@ -29,7 +29,7 @@ const Player = ({ match, playing, history }) => {
   return hasPlaying ? (
     <div className="Player">
       <video controls autoPlay>
-        <source src={playing.source} type="video/mp4" />
+        <source src={props.playing.source} type="video/mp4" />
       </video>
       <div className="Player-back">
         <button type="button" onClick={handleBack}>
@@ -46,6 +46,7 @@ Player.propTypes = {
   playing: PropTypes.object,
   match: PropTypes.object,
   history: PropTypes.object,
+  getVideoSource: PropTypes.func,
 };
 
 const mapStateToProps = (state) => {

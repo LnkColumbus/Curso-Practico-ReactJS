@@ -6,12 +6,13 @@ import PropTypes from 'prop-types';
 import { getVideoSearched } from '../actions';
 import '../assets/styles/components/Search.scss';
 
-const Search = ({ isHome }) => {
+const Search = (props) => {
+  const { isHome } = props;
   const inputStyle = classNames('input', {
     isHome,
   });
   const handleSearch = (event) => {
-    getVideoSearched(event.target.value);
+    props.getVideoSearched(event.target.value);
   };
   return (
     <section className="main">
@@ -28,6 +29,7 @@ const Search = ({ isHome }) => {
 
 Search.propTypes = {
   isHome: PropTypes.bool,
+  getVideoSearched: PropTypes.func,
 };
 
 const mapDispatchToProps = {
