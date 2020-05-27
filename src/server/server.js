@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable func-names */
 import express from 'express';
 import webpack from 'webpack';
 import helmet from 'helmet';
@@ -7,16 +9,16 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { renderRoutes } from 'react-router-config';
 import { StaticRouter } from 'react-router-dom';
+import boom from '@hapi/boom';
+import cookieParser from 'cookie-parser';
+import passport from 'passport';
+import axios from 'axios';
+
 import serverRoutes from '../frontend/routes/serverRoutes';
 import reducer from '../frontend/reducers';
 import initialState from '../frontend/initialState';
 import getManifest from './getManifest';
 import config from './config';
-
-import cookieParser from 'cookie-parser';
-import hapi from '@hapi/boom';
-import passport from 'passport';
-import axios from 'axios';
 
 const { env, port, apiUrl } = config;
 const app = express();
@@ -105,9 +107,9 @@ app.post('/auth/sign-in', async function (req, res, next) {
         next(boom.unauthorized());
       }
 
-      req.login(data, { session: false }, async function (error) {
-        if (error) {
-          next(error);
+      req.login(data, { session: false }, async function (errLogin) {
+        if (errLogin) {
+          next(errLogin);
         }
 
         const { token, ...user } = data;
@@ -134,8 +136,8 @@ app.post('/auth/sign-in', async function (req, res, next) {
 
         res.status(200).json(user);
       });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
     }
   })(req, res, next);
 });
