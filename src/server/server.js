@@ -16,7 +16,6 @@ import axios from 'axios';
 
 import serverRoutes from '../frontend/routes/serverRoutes';
 import reducer from '../frontend/reducers';
-import initialState from '../frontend/initialState';
 import getManifest from './getManifest';
 import config from './config';
 
@@ -29,7 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Strategies
-require('./utils/auth/strategies/basic');
+require('./utils/auth/strategies/basic.js');
 
 // Variables de tiempo en sec
 const THIRTY_DAYS_IN_SEC = 2592000;
@@ -83,13 +82,61 @@ const setResponse = (html, preloadedState, manifest) => {
   `;
 };
 
-const renderApp = (req, res) => {
+const renderApp = async (req, res) => {
+  let initialState;
+  const { token, email, name, id } = req.cookies;
+  try {
+    let movieList = await axios({
+      url: `${apiUrl}/api/movies`,
+      headers: { Authorization: `Bearer ${token}` },
+      method: 'get',
+    });
+    movieList = movieList.data.data;
+    // let userMovies = await axios({
+    //   url: `${apiUrl}/api/user-movies`,
+    //   headers: { Authorization: `Bearer ${token}` },
+    //   method: 'get',
+    // });
+    // userMovies = userMovies.data.data;
+    // const myList = userMovies.map((userMovie) => {
+    //   return movieList.filter(
+    //     (movie) => movie._id === userMovie.movieId && movie._id,
+    //   );
+    // });
+    initialState = {
+      user: {
+        id,
+        email,
+        name,
+      },
+      playing: {},
+      myList: [],
+      search: [],
+      trends: movieList.filter(
+        (movie) => movie.contentRating === 'PG' && movie._id,
+      ),
+      originals: movieList.filter(
+        (movie) => movie.contentRating === 'G' && movie._id,
+      ),
+    };
+  } catch (error) {
+    initialState = {
+      user: {},
+      playing: {},
+      myList: [],
+      search: [],
+      trends: [],
+      originals: [],
+    };
+  }
+
   const store = createStore(reducer, initialState);
   const preloadedState = store.getState();
+  const isLogged = initialState.user.id;
   const html = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.url} context={{}}>
-        {renderRoutes(serverRoutes)}
+        {renderRoutes(serverRoutes(isLogged))}
       </StaticRouter>
     </Provider>,
   );
@@ -108,33 +155,36 @@ app.post('/auth/sign-in', async function (req, res, next) {
       }
 
       req.login(data, { session: false }, async function (errLogin) {
-        if (errLogin) {
-          next(errLogin);
+        try {
+          if (errLogin) {
+            next(errLogin);
+          }
+
+          const { token, ...user } = data;
+          // Si el attr es verdadero expira en 30 dias
+          // De lo contrario expira en 2 horas
+
+          if (env !== 'development') {
+            res.cookie('token', token, {
+              httpOnly: true,
+              secure: true,
+              maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
+            });
+          } else {
+            res.cookie('token', token, {
+              maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
+            });
+          }
+          // res.cookie("token", token, {
+          //   httpOnly: !config.dev,
+          //   secure: !config.dev,
+          //   maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
+          // });
+
+          res.status(200).json(user);
+        } catch (err) {
+          next(err);
         }
-
-        const { token, ...user } = data;
-
-        // Si el attr es verdadero expira en 30 dias
-        // De lo contrario expira en 2 horas
-
-        if (!config.dev) {
-          res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,
-            maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
-          });
-        } else {
-          res.cookie('token', token, {
-            maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
-          });
-        }
-        // res.cookie("token", token, {
-        //   httpOnly: !config.dev,
-        //   secure: !config.dev,
-        //   maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
-        // });
-
-        res.status(200).json(user);
       });
     } catch (err) {
       next(err);
@@ -161,6 +211,28 @@ app.post('/auth/sign-up', async function (req, res, next) {
       email: req.body.email,
       id: userData.data.id,
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/user-movies', async function (req, res, next) {
+  try {
+    const { token } = req.cookies;
+    const { body: userMovie } = req;
+
+    const { data, status } = await axios({
+      url: `${apiUrl}/api/user-movies`,
+      headers: { Authorization: `Bearer ${token}` },
+      method: 'post',
+      data: userMovie,
+    });
+
+    if (status !== 201) {
+      next(boom.badImplementation());
+    }
+
+    res.status(201).json(data);
   } catch (error) {
     next(error);
   }

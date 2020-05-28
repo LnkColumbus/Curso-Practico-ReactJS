@@ -52,4 +52,42 @@ export const registerUser = (payload, redirectUrl) => {
   };
 };
 
+export const loginUser = ({ email, password }, redirectUrl) => {
+  return (dispatch) => {
+    axios({
+      url: '/auth/sign-in',
+      method: 'post',
+      auth: {
+        username: email,
+        password,
+      },
+    })
+      .then(({ data }) => {
+        document.cookie = `email=${data.user.email}`;
+        document.cookie = `name=${data.user.name}`;
+        document.cookie = `id=${data.user.id}`;
+        dispatch(loginRequest(data.user));
+      })
+      .then(() => {
+        window.location.href = redirectUrl;
+      })
+      .catch((error) => dispatch(setError(error)));
+  };
+};
+
+export const saveFavorite = (movie, userId) => {
+  return (dispatch) => {
+    axios({
+      url: '/user-movies',
+      method: 'post',
+      data: {
+        userId,
+        movieId: movie.id,
+      },
+    })
+      .then(() => dispatch(setFavorite(movie)))
+      .catch((error) => dispatch(setError(error)));
+  };
+};
+
 export { setFavorite as default };
