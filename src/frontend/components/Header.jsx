@@ -21,6 +21,7 @@ const Header = (props) => {
     document.cookie = 'email=';
     document.cookie = 'name=';
     document.cookie = 'id=';
+    document.cookie = 'token=';
     props.logoutRequest({});
     window.location.href = '/login';
   };
